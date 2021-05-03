@@ -65,7 +65,7 @@ module syncfifo
 		`ifdef TST_ACTIVE
 		rd_dt= ( ( rd_en & !f_empty ) ? f_mem[rd_pntr] : 16'hx );
 		`else
-		rd_dt= loc[rd_pntr];
+		rd_dt= f_mem[rd_pntr];
 		`endif
 		
 	end
