@@ -5,7 +5,7 @@ module fifo_pntr
     (
         input clk,rst,enable,select,
         output[4:0] pntr
-    )
+    );
    
     reg[4:0] pntr;
 

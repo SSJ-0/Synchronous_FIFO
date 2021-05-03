@@ -63,7 +63,7 @@ module syncfifo
 	always_comb begin
 
 		`ifdef TST_ACTIVE
-		rd_dt= ( ( rd_en & !f_empty ) ? loc[rd_ptr] : 16'hx );
+		rd_dt= ( ( rd_en & !f_empty ) ? f_mem[rd_pntr] : 16'hx );
 		`else
 		rd_dt= loc[rd_pntr];
 		`endif
