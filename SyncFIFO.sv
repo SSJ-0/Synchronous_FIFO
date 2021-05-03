@@ -23,11 +23,32 @@ module syncfifo
 	wire f_empty,f_full;
 	wire[FADD_WIDTH-1:0] rd_pntr;
 	wire[FADD_WIDTH-1:0] wrt_pntr;
-
-
-	pntr rp(clk,rst,rd_en,rd_pntr,empty_b);
-	pntr wp(clk,rst,wrt_en,wrt_pntr,full_b);
-
+	
+	//For read pointer
+	fifo_pntr
+	#(
+		.FADD_WIDTH(FADD_WIDTH)
+	) 
+	rp
+	(
+		clk,rst,
+		rd_en,
+		rd_pntr,
+		empty_b
+	);
+	
+	//For write pointer
+	fifo_pntr
+	#(
+		.FADD_WIDTH(FADD_WIDTH)
+	)
+	wp 
+	(
+		clk,rst,
+		wrt_en,
+		wrt_pntr,
+		full_b
+	);
 
 
 	always_ff @(posedge clk) begin
