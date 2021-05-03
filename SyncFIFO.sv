@@ -1,21 +1,4 @@
-module pntr(clk,rst,enable,count,select);
-`timescale 1ns/1ps
-
-
-input clk,rst,enable,select;
-output[4:0] count;
-
-reg[4:0] count;
-
-always @(posedge clk or posedge rst)
-begin
-if(rst)
-    count<=5'b00000;
-else if(enable && select)
-    count<=count+5'b00001;
-end
-
-endmodule
+`define TST_ACTIVE	
 
 module syncfifo 
 	#(
@@ -48,9 +31,11 @@ module syncfifo
 
 
 	always_ff @(posedge clk) begin
+		
 		if(wrt_en & !f_full) begin
 			f_mem[wrt_pntr]<=wrt_dt;
 		end
+		
 	end
 
 
@@ -59,10 +44,12 @@ module syncfifo
 		`ifdef TST_ACTIVE
 		rd_dt= ( ( rd_en & !f_empty ) ? loc[rd_ptr] : 16'hx );
 		`else
-		rd_dt= (
+		rd_dt= loc[rd_pntr];
+		`endif
+		
 	end
 	
-assign f_full=  ( rd_pntr[4]!=wrt_pntr[4] ) & ( rd_pntr[3:0]==wrt_pntr[3:0] );
-assign f_empty= ( rd_pntr==wrt_pntr );
+	assign f_full=  ( rd_pntr[4]!=wrt_pntr[4] ) & ( rd_pntr[3:0]==wrt_pntr[3:0] );
+	assign f_empty= ( rd_pntr==wrt_pntr );
 
 endmodule
