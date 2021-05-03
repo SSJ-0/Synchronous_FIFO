@@ -31,7 +31,7 @@ parameter FADD_WIDTH=$clog2(F_DEPTH);
 
 
 reg[DT_WIDTH-1:0] rd_dt;
-reg[DT_WIDTH-1:0] loc[F_DEPTH:0];
+	reg[DT_WIDTH-1:0] f_mem[F_DEPTH:0];
 
 
 wire f_empty,f_full;
@@ -43,37 +43,11 @@ pntr rp(clk,rst,rd_en,rd_pntr,empty_b);
 pntr wp(clk,rst,wrt_en,wrt_pntr,full_b);
 
 
-always @(posedge clk) 
-begin
-	if(!rd_en) begin
-		if((r_p_temp[4]!=wrt_pntr[4] && r_p_temp[3]==wrt_pntr[3] && r_p_temp[2]==wrt_pntr[2] && r_p_temp[1]==wrt_pntr[1] && r_p_temp[0]==wrt_pntr[0]) || (rd_pntr[4]!=wrt_pntr[4] && rd_pntr[3]==wrt_pntr[3] && rd_pntr[2]==wrt_pntr[2] && rd_pntr[1]==wrt_pntr[1] && rd_pntr[0]==wrt_pntr[0]))
-			full_bar=0;
-	end
-	else
-		full_bar=1;
-	if(wrt_en) begin
-		if(!full_bar)
-			$display("FIFO is full");
-		else begin
-			case({wrt_pntr[3],wrt_pntr[2],wrt_pntr[1],wrt_pntr[0]})
-				4'b0000: loc[0]<=wrt_dt;
-				4'b0001: loc[1]<=wrt_dt;
-				4'b0010: loc[2]<=wrt_dt;
-				4'b0011: loc[3]<=wrt_dt;
-				4'b0100: loc[4]<=wrt_dt;
-				4'b0101: loc[5]<=wrt_dt;
-				4'b0110: loc[6]<=wrt_dt;
-				4'b0111: loc[7]<=wrt_dt;
-				4'b1000: loc[8]<=wrt_dt;
-				4'b1001: loc[9]<=wrt_dt;
-				4'b1010: loc[10]<=wrt_dt;
-				4'b1011: loc[11]<=wrt_dt;
-				4'b1100: loc[12]<=wrt_dt;
-				4'b1101: loc[13]<=wrt_dt;
-				4'b1110: loc[14]<=wrt_dt;
-				4'b1111: loc[15]<=wrt_dt;
-			endcase
-		end
+always_ff @(posedge clk) begin
+	if(wrt_en & !f_full) begin
+				
+		f_mem[wrt_pntr]<=wrt_dt;
+				
 	end
 end
 
