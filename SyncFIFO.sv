@@ -51,112 +51,16 @@ always_ff @(posedge clk) begin
 	end
 end
 
-always @(posedge clk)
-begin
-if(rd_en) begin
-if(rd_pntr==wrt_pntr)
-$display("FIFO is empty");
-else begin
-case({rd_pntr[3],rd_pntr[2],rd_pntr[1],rd_pntr[0]})
-4'b0000: begin rd_dt<=loc[0];
-         loc[0]<=8'h00;  end
-4'b0001: begin rd_dt<=loc[1];
-         loc[1]<=8'h00;  end       
-4'b0010: begin rd_dt<=loc[2];
-         loc[2]<=8'h00;  end
-4'b0011: begin rd_dt<=loc[3];
-         loc[3]<=8'h00;  end
-4'b0100: begin rd_dt<=loc[4];
-         loc[4]<=8'h00;  end
-4'b0101: begin rd_dt<=loc[5];
-         loc[5]<=8'h00;  end
-4'b0110: begin rd_dt<=loc[6];
-         loc[6]<=8'h00;  end
-4'b0111: begin rd_dt<=loc[7];
-         loc[7]<=8'h00;  end
-4'b1000: begin rd_dt<=loc[8];
-         loc[8]<=8'h00;  end
-4'b1001: begin rd_dt<=loc[9];
-         loc[9]<=8'h00;  end
-4'b1010: begin rd_dt<=loc[10];
-         loc[10]<=8'h00;  end
-4'b1011: begin rd_dt<=loc[11];
-         loc[11]<=8'h00;  end
-4'b1100: begin rd_dt<=loc[12];
-         loc[12]<=8'h00;  end
-4'b1101: begin rd_dt<=loc[13];
-         loc[13]<=8'h00;  end
-4'b1110: begin rd_dt<=loc[14];
-         loc[14]<=8'h00;  end
-4'b1111: begin rd_dt<=loc[15];
-         loc[15]<=8'h00;  end
-endcase
-end
-end
-if(!wrt_en) begin
-if(rd_pntr==w_p_temp || rd_pntr==wrt_pntr)
-empty_bar=0;
-end
-else
-empty_bar=1;
-end
-`ifdef TST_ACTIVE
-	assign rd_pntr= ( rd_en? ( f_empty? 16'hx : loc[rd_ptr] 
+always_comb begin
 
+	`ifdef TST_ACTIVE
+	rd_dt= ( ( rd_en & !f_empty ) ? loc[rd_ptr] : 16'hx );
+	`else
+	rd_dt= 
+	
+end
+	
 assign f_full=  ( rd_pntr[4]!=wrt_pntr[4] ) & ( rd_pntr[3:0]==wrt_pntr[3:0] );
 assign f_empty= ( rd_pntr==wrt_pntr );
 
 endmodule
-/*
-module syncfifo_testbench();
-`timescale 1ns/1ps
-
-wire clk,rst,rd_en,wrt_en;
-reg ck,res,r_en,w_en;
-reg[7:0] wrt_dt;
-wire[7:0] rd_dt;
-
-syncfifo duty(clk,rst,rd_en,wrt_en,wrt_dt,rd_dt);
-initial begin
-ck=1;
-forever #5 ck=~ck;
-end
-
-initial begin
-wrt_dt=8'hff;
-forever begin
-#10 wrt_dt<=wrt_dt+8'h08;
-end
-end
-
-initial begin
-r_en=0;
-#40 r_en<=1;
-forever begin
-#80 r_en<=~r_en;
-#20 r_en<=~r_en;
-end
-end
-
-initial begin
-w_en=0;
-#20 w_en<=1;
-forever begin
-#1000 w_en<=~w_en;
-#1000 w_en<=~w_en;
-end
-end
-
-initial begin
-res=1;
-#20;
-res<=0;
-end
-
-assign clk=ck;
-assign rst=res;
-assign rd_en=r_en;
-assign wrt_en=w_en;
-
-endmodule
-
